@@ -19,19 +19,22 @@ const textStyle = {
 
 const StarRating = ({ maxRating = 5 }) => {
   const [rating, setRating] = React.useState(0);
-
-  const handleRate = (i) => {
-    setRating(i + 1);
-  };
+  const [tempRating, setTempRating] = React.useState(0);
 
   return (
     <div style={containerStyle}>
       <div style={StarContainerStyle}>
         {Array.from({ length: maxRating }, (_, i) => (
-          <Star key={i} onRate={() => handleRate(i)} full={i < rating} />
+          <Star
+            key={i}
+            onRate={() => setRating(i + 1)}
+            onHoverIn={() => setTempRating(i + 1)}
+            onHoverOut={() => setTempRating(0)}
+            full={tempRating ? i < tempRating : i < rating}
+          />
         ))}
       </div>
-      <p style={textStyle}>{rating > 0 && rating}</p>
+      <p style={textStyle}>{tempRating ? tempRating : rating > 0 && rating}</p>
     </div>
   );
 };
@@ -43,9 +46,15 @@ const starStyle = {
   cursor: "pointer",
 };
 
-const Star = ({ onRate, full }) => {
+const Star = ({ onRate, full, onHoverIn, onHoverOut }) => {
   return (
-    <span style={starStyle} role="button" onClick={onRate}>
+    <span
+      style={starStyle}
+      role="button"
+      onClick={onRate}
+      onMouseEnter={onHoverIn}
+      onMouseLeave={onHoverOut}
+    >
       {full ? (
         <svg
           xmlns="http://www.w3.org/2000/svg"
