@@ -7,8 +7,8 @@ import Test from "./Test";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    {/* <App /> */}
-    <StarRating maxRating={"abc"} />
+    <App />
+    {/* <StarRating maxRating={"abc"} />
     <StarRating
       maxRating={5}
       size={2}
@@ -17,6 +17,6 @@ createRoot(document.getElementById("root")).render(
       messages={["Terrible", "Bad", "Okay", "Good", "Amazing"]}
       defaultRating={3}
     />
-    <Test />
+    <Test /> */}
   </StrictMode>,
 );

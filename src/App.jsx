@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React from "react";
 import "./index.css";
 import StarRating from "./StarRating";
 
@@ -52,9 +52,39 @@ const tempWatchedData = [
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
+const KEY = "6ee354ec";
+const query = "pidzfughpri";
+
 const App = () => {
-  const [movies, setMovies] = useState(tempMovieData);
-  const [watched, setWatched] = useState(tempWatchedData);
+  const [movies, setMovies] = React.useState([]);
+  const [watched, setWatched] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+
+  React.useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        setIsLoading(true);
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+        );
+
+        if (!res.ok)
+          throw new Error("Something went wrong with fetching movies");
+
+        const data = await res.json();
+
+        if (data.Response === "False") throw new Error("Movie not found");
+
+        setMovies(data.Search);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchMovies();
+  }, []);
 
   return (
     <>
@@ -64,16 +94,29 @@ const App = () => {
       </NavBar>
       <Main>
         <Box>
-          <MovieList movies={movies} />
+          {isLoading && <Loader />}
+          {!isLoading && !error && <MovieList movies={movies} />}
+          {error && <ErrorMessage message={error} />}
         </Box>
         <Box>
           <WatchedSummary watched={watched} />
-          <StarRating />
           <WatchedMovieList watched={watched} />
         </Box>
       </Main>
     </>
   );
+};
+
+const ErrorMessage = ({ message }) => {
+  return (
+    <p className="error">
+      <span>⛔️</span> {message}
+    </p>
+  );
+};
+
+const Loader = () => {
+  return <p className="loader">Loading...</p>;
 };
 
 const NavBar = ({ children }) => {
@@ -95,7 +138,7 @@ const Logo = () => {
 };
 
 const Search = () => {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = React.useState("");
 
   return (
     <input
@@ -121,7 +164,7 @@ const Main = ({ children }) => {
 };
 
 const Box = ({ children }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = React.useState(true);
 
   return (
     <div className="box">
