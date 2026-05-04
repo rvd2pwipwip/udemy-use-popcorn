@@ -53,9 +53,10 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 const KEY = "6ee354ec";
-const query = "pidzfughpri";
+const tempQuery = "duel";
 
 const App = () => {
+  const [query, setQuery] = React.useState(tempQuery);
   const [movies, setMovies] = React.useState([]);
   const [watched, setWatched] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -65,6 +66,7 @@ const App = () => {
     const fetchMovies = async () => {
       try {
         setIsLoading(true);
+        setError("");
         const res = await fetch(
           `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
         );
@@ -83,13 +85,18 @@ const App = () => {
         setIsLoading(false);
       }
     };
+    if (query.length < 3) {
+      setMovies([]);
+      setError("");
+      return;
+    }
     fetchMovies();
-  }, []);
+  }, [query]);
 
   return (
     <>
       <NavBar>
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </NavBar>
       <Main>
@@ -137,9 +144,7 @@ const Logo = () => {
   );
 };
 
-const Search = () => {
-  const [query, setQuery] = React.useState("");
-
+const Search = ({ query, setQuery }) => {
   return (
     <input
       className="search"
