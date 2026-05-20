@@ -78,12 +78,15 @@ const App = () => {
   };
 
   React.useEffect(() => {
+    const controller = new AbortController();
+
     const fetchMovies = async () => {
       try {
         setIsLoading(true);
         setError("");
         const res = await fetch(
           `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+          { signal: controller.signal },
         );
 
         if (!res.ok)
@@ -95,7 +98,7 @@ const App = () => {
 
         setMovies(data.Search);
       } catch (err) {
-        setError(err.message);
+        if (err.name !== "AbortError") setError(err.message);
       } finally {
         setIsLoading(false);
       }
@@ -106,6 +109,8 @@ const App = () => {
       return;
     }
     fetchMovies();
+
+    return () => controller.abort();
   }, [query]);
 
   return (
