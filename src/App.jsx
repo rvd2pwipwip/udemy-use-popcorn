@@ -291,6 +291,8 @@ const MovieDetails = ({ selectedId, onCloseMovie, onAddWatched, watched }) => {
   React.useEffect(() => {
     if (!title) return;
     document.title = `MOVIE: ${title}`;
+
+    return () => (document.title = "udemy-use-popcorn");
   }, [title]);
 
   const handleAddMovie = () => {
