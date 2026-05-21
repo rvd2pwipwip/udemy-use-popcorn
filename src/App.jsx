@@ -53,10 +53,10 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 const KEY = "6ee354ec";
-const tempQuery = "duel";
+// const tempQuery = "duel";
 
 const App = () => {
-  const [query, setQuery] = React.useState(tempQuery);
+  const [query, setQuery] = React.useState("");
   const [movies, setMovies] = React.useState([]);
   const [watched, setWatched] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -108,6 +108,8 @@ const App = () => {
       setError("");
       return;
     }
+
+    handleCloseMovie();
     fetchMovies();
 
     return () => controller.abort();
@@ -272,6 +274,18 @@ const MovieDetails = ({ selectedId, onCloseMovie, onAddWatched, watched }) => {
   } = movie;
 
   React.useEffect(() => {
+    const callback = (e) => {
+      if (e.code === "Escape") {
+        onCloseMovie();
+      }
+    };
+    document.addEventListener("keydown", callback);
+    return () => {
+      document.removeEventListener("keydown", callback);
+    };
+  }, [onCloseMovie]);
+
+  React.useEffect(() => {
     const getMovieDetails = async () => {
       try {
         setIsLoading(true);
@@ -295,7 +309,7 @@ const MovieDetails = ({ selectedId, onCloseMovie, onAddWatched, watched }) => {
 
   React.useEffect(() => {
     if (!title) return;
-    document.title = `MOVIE: ${title}`;
+    document.title = `Movie: ${title}`;
 
     return () => (document.title = "udemy-use-popcorn");
   }, [title]);
